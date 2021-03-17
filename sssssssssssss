@@ -1,0 +1,37 @@
+rm(list=ls())
+setwd("C:/Users/iozeris/OneDrive/Desktop/Mestrado - eco")
+rm(list=ls())
+pesoxcomp<-read.csv("cxpx1.1.csv", h = T,sep = ";")
+attach(pesoxcomp)
+head(pesoxcomp)
+
+
+
+pesoxcomp$peso <- as.numeric(gsub(",",".",pesoxcomp$peso))
+pesoxcomp$CP <- as.numeric(as.character(pesoxcomp$CP))
+
+sp <- levels(pesoxcomp$sp)
+df <- data.frame(especie = NA, a = NA, b = NA,r.squa = NA ,t.max = NA, t.min = NA, p.max=NA, p.max=NA,n = NA)
+
+
+
+for(i in 1:length(sp)){
+  
+  x <- pesoxcomp[pesoxcomp$sp== sp[i],]
+  
+  df[i,1] <- sp[i]
+  resul_lm <- lm(log(x$peso)~log(x$CP))
+  df[i,2:3] <- coefficients(resul_lm)
+  df[i,4] <- summary(resul_lm)[8]
+  df[i,5] <- max(x$CP, na.rm = T)
+  df[i,6] <- min(x$CP, na.rm = T)
+  df[i,7] <- max(x$CP, na.rm = T)
+  df[i,8] <- min(x$CP, na.rm = T)
+  df[i,9] <- nrow(x)
+}
+table(pesoxcomp$sp)
+head(df) 
+  write.table(df,"resul_total.csv")   ##### MUDE ESSE NOME QUANDO FIZER PARA PESO EVISCERADO
+  # write.table(df,"resul_.txt")
+  # write.table(df,"resul_.html")
+resid(resul_lm)
